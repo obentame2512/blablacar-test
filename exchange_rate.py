@@ -1,7 +1,7 @@
 import pandas
 
 def exchange_rate_history(table):
-    dates = df.drop([0,1,2,3,4,5])
+    dates = df.drop([0,1,2,3,4])
     dates = dates.melt(id_vars=['Titre :'], var_name= 'cur_code', value_name= 'one_euro_value')
     dates = dates.rename(columns = {'Titre :': 'history_date'})
     dates = dates[(dates.one_euro_value != '-') & (dates.one_euro_value.notnull())]
