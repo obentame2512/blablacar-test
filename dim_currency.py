@@ -3,7 +3,7 @@ import pandas
 # Create the table dim_currency with all available currencies in the file
 def dim_cur(table):
     cur_history = table.drop([0,1,2,3,4])
-    # Create a table cur_history with the history of the currencies and their values in euro
+    # Calculate cur_history with the history of the currencies and their values in euro
     cur_history = cur_history.melt(id_vars=['Titre :'], var_name= 'cur_code', value_name= 'one_euro_value')
     cur_history = cur_history.rename(columns = {'Titre :': 'cur_date'})
     cur_history = cur_history[(cur_history.one_euro_value != '-') & (cur_history.one_euro_value.notnull())]
@@ -13,12 +13,12 @@ def dim_cur(table):
     last_update = last_update.groupby('cur_code').max()
     last_update_currency = pandas.merge(cur_history, last_update, 'inner', ['cur_code', 'cur_date'])
     last_update_currency = last_update_currency.rename(columns = {'cur_date': 'last_updated_date'})
-    # Create a table ser_code with the currencies and their serial codes
+    # Calculate ser_code with the currencies and their serial codes
     ser_code = pandas.DataFrame(table.iloc[0:1,1:])
     ser_code = ser_code.melt(var_name= 'cur_code', value_name= 'Serial_code')
     # merge ser_code and last_update_currency
     dim_currency = pandas.merge(ser_code, last_update_currency, 'inner', ['cur_code'])
-    dim_currency['cur_code'] = dim_currency['cur_code'].str.rsplit('(', 1).str[1].str.rsplit(')', 1).str[0]
+    dim_currency['cur_code'] = dim_currency.Serial_code.str[6:9]
     return dim_currency
   
 df = pandas.read_csv('http://webstat.banque-france.fr/fr/downloadFile.do?id=5385698&exportType=csv', delimiter= ';')
